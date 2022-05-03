@@ -132,6 +132,7 @@ func (ec *baseExpCommandService) registerSubCommands() {
 // registerOsExpCommands
 func (ec *baseExpCommandService) registerOsExpCommands() []*modelCommand {
 	file := path.Join(util.GetYamlHome(), fmt.Sprintf("chaosblade-os-spec-%s.yaml", version.Ver))
+	// 这个地方用yaml文件的配置创建一个子命令，注意这里的执行器目前是空的
 	models, err := specutil.ParseSpecsToModel(file, os.NewExecutor())
 	if err != nil {
 		return nil
@@ -139,6 +140,7 @@ func (ec *baseExpCommandService) registerOsExpCommands() []*modelCommand {
 	osCommands := make([]*modelCommand, 0)
 	for idx := range models.Models {
 		model := &models.Models[idx]
+		// 给create注册子命令
 		command := ec.registerExpCommand(model, "")
 		osCommands = append(osCommands, command)
 	}
@@ -304,6 +306,7 @@ func (ec *baseExpCommandService) registerExpCommand(commandSpec spec.ExpModelCom
 		Use:   cmdName,
 		Short: commandSpec.ShortDesc(),
 		Long:  commandSpec.LongDesc(),
+		// 目前的RunE还没有有效的执行器
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return spec.ResponseFailWithFlags(spec.CommandIllegal, "less action command")
 		},

@@ -63,6 +63,7 @@ func (cc *CreateCommand) Init() {
 		Aliases: []string{"c"},
 		Example: createExample(),
 	}
+	// 设置全局参数
 	flags := cc.command.PersistentFlags()
 	flags.StringVar(&uid, UidFlag, "", "Set Uid for the experiment, adapt to docker and cri")
 	flags.BoolVarP(&cc.async, AsyncFlag, "a", false, "whether to create asynchronously, default is false")

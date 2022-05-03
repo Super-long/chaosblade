@@ -69,6 +69,7 @@ func (e *Executor) Exec(uid string, ctx context.Context, model *spec.ExpModel) *
 	log.Debugf(ctx, "run command, %s %s", chaosOsBin, args)
 
 	if model.ActionProcessHang && !isDestroy {
+		// 和run的区别是start不等待其执行完成
 		if err := command.Start(); err != nil {
 			sprintf := fmt.Sprintf("create experiment command start failed, %v", err)
 			return spec.ReturnFail(spec.OsCmdExecFailed, sprintf)
