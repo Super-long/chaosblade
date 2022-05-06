@@ -92,6 +92,7 @@ var insertExpDML = `INSERT INTO
 `
 
 func (s *Source) CheckAndInitExperimentTable() {
+	// 只是去检查experiment表是否存在
 	exists, err := s.ExperimentTableExists()
 	ctx := context.Background()
 	if err != nil {
@@ -120,6 +121,8 @@ func (s *Source) ExperimentTableExists() (bool, error) {
 		return false, fmt.Errorf("select experiment table exists or not err, %s", err)
 	}
 	defer rows.Close()
+	// 看起来挺奇怪的，实际执行的语句是：
+	// SELECT count(*) AS c FROM sqlite_master WHERE type = "table" AND name = ?;
 	var c int
 	for rows.Next() {
 		rows.Scan(&c)

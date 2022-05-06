@@ -55,7 +55,7 @@ func (e *Executor) Exec(uid string, ctx context.Context, model *spec.ExpModel) *
 		}
 		flags = fmt.Sprintf("%s --%s=%s", flags, k, v)
 	}
-
+	// 通过withvalue修改的
 	_, isDestroy := spec.IsDestroy(ctx)
 
 	if isDestroy {
@@ -77,6 +77,7 @@ func (e *Executor) Exec(uid string, ctx context.Context, model *spec.ExpModel) *
 		command.SysProcAttr = &syscall.SysProcAttr{}
 		return spec.ReturnSuccess(command.Process.Pid)
 	} else {
+		// 先Run然后再打印标准输出和标准错误
 		output, err := command.CombinedOutput()
 		outMsg := string(output)
 		log.Debugf(ctx, "Command Result, output: %v, err: %v", outMsg, err)

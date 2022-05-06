@@ -100,6 +100,7 @@ var insertPreDML = `INSERT INTO
 	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 `
 
+// 这里其实就是搞一个小优化，存在userversion默认为零，但是可能出现问题
 func (s *Source) CheckAndInitPreTable() {
 	// check user_version
 	version, err := s.GetUserVersion()

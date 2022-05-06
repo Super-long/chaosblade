@@ -68,8 +68,10 @@ func (dc *DestroyCommand) Init() {
 // runDestroyWithUid destroy and remove experiment based on Uid and forceRemoveFlag
 // Processes k8s experiments not only local records, but also chaosblade resources in the cluster.
 func (dc *DestroyCommand) runDestroyWithUid(ctx context.Context, cmd *cobra.Command, args []string) error {
+	// 默认第一个参数是uid
 	uid := args[0]
 	log.Infof(ctx, "destroy by %s uid, force-remove: %t, target: %s", uid, dc.forceRemove, dc.expTarget)
+	// GetDS其实就是单例的去拿SourceI结构，这里理论只能拿到一个model
 	model, err := GetDS().QueryExperimentModelByUid(uid)
 	lowerExpTarget := strings.ToLower(dc.expTarget)
 	isK8sTarget := lowerExpTarget == "kubernetes" || lowerExpTarget == "k8s"
@@ -111,6 +113,7 @@ func (dc *DestroyCommand) destroyAndRemoveK8sExperimentWithoutRecordByForceFlag(
 // destroyAndRemoveExperimentByUidAndForceFlag destroys and forcibly deletes experiments with local records, including k8s experiments.
 func (dc *DestroyCommand) destroyAndRemoveExperimentByUidAndForceFlag(
 	cmd *cobra.Command, err error, model *data.ExperimentModel, uid string, isK8sTarget bool) error {
+	// 
 	response, err := dc.destroyExperimentByUid(model, uid)
 	removeRecordErr := dc.checkAndForceRemoveForExpRecord(uid)
 	var removeResourceErr error

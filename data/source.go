@@ -61,6 +61,7 @@ const tableExistsDQL = `SELECT count(*) AS c
 `
 
 func (s *Source) init() {
+	// 检查是否存在experiment表，如果不存在的话就创建一个
 	s.CheckAndInitExperimentTable()
 	s.CheckAndInitPreTable()
 }
