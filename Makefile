@@ -21,7 +21,7 @@ DOCKER_BLADE_VERSION=github.com/chaosblade-io/chaosblade-exec-docker/version
 OS_BLADE_VERSION=github.com/chaosblade-io/chaosblade-exec-os/version
 
 GO_X_FLAGS=-X ${VERSION_PKG}.Ver=$(BLADE_VERSION) -X '${VERSION_PKG}.Env=`uname -mv`' -X '${VERSION_PKG}.BuildTime=`date`' -X ${DOCKER_BLADE_VERSION}.BladeVersion=$(BLADE_VERSION) -X ${OS_BLADE_VERSION}.BladeVersion=$(BLADE_VERSION)
-GO_FLAGS=-ldflags="$(GO_X_FLAGS) -s -w"
+GO_FLAGS=-ldflags="$(GO_X_FLAGS)"
 GO=env $(GO_ENV) $(GO_MODULE) go
 
 UNAME := $(shell uname)
@@ -43,7 +43,7 @@ BUILD_ARM_IMAGE_PATH=build/image/blade_arm
 BUILD_TARGET_CACHE=$(BUILD_TARGET)/cache
 
 # chaosblade-exec-os
-BLADE_EXEC_OS_PROJECT=https://github.com/chaosblade-io/chaosblade-exec-os.git
+BLADE_EXEC_OS_PROJECT=git@github.com/chaosblade-io/chaosblade-exec-os.git
 BLADE_EXEC_OS_BRANCH=1.6.0-dev
 
 # chaosblade-exec-docker
@@ -51,7 +51,7 @@ BLADE_EXEC_DOCKER_PROJECT=https://github.com/chaosblade-io/chaosblade-exec-docke
 BLADE_EXEC_DOCKER_BRANCH=v1.5.0
 
 # chaosblade-exec-cri
-BLADE_EXEC_CRI_PROJECT=https://github.com/chaosblade-io/chaosblade-exec-cri.git
+BLADE_EXEC_CRI_PROJECT=git@github.com/chaosblade-io/chaosblade-exec-cri.git
 BLADE_EXEC_CRI_BRANCH=1.6.0-dev
 
 # chaosblade-exec-kubernetes
@@ -80,7 +80,7 @@ CHECK_YANL_FILE_OSS=https://chaosblade.oss-cn-hangzhou.aliyuncs.com/agent/github
 CHECK_YAML_FILE_PATH=$(BUILD_TARGET_YAML)/$(CHECK_YAML_FILE_NAME)
 
 ifeq ($(GOOS), linux)
-	GO_FLAGS=-ldflags="-linkmode external -extldflags -static $(GO_X_FLAGS) -s -w"
+	GO_FLAGS=-ldflags="-compressdwarf=false -linkmode external -extldflags -static $(GO_X_FLAGS)" -gcflags="all=-N -l"
 endif
 
 help:
@@ -120,10 +120,10 @@ pre_build: mkdir_build_target ## Mkdir build target
 # build chaosblade cli: blade
 .PHONY:cli
 cli: ## Build blade cli
-	$(GO) build $(GO_FLAGS) -o $(BUILD_TARGET_PKG_DIR)/blade ./cli
+	$(GO) build -gcflags "-N -l" $(GO_FLAGS) -o $(BUILD_TARGET_PKG_DIR)/blade ./cli
 
 nsexec: ## Build nsexec
-	/usr/local/musl/bin/musl-gcc -static nsexec.c -o $(BUILD_TARGET_PKG_DIR)/bin/nsexec
+	musl-gcc -static nsexec.c -o $(BUILD_TARGET_PKG_DIR)/bin/nsexec
 
 os: ## Build basic resource experimental scenarios.
 ifneq ($(BUILD_TARGET_CACHE)/chaosblade-exec-os, $(wildcard $(BUILD_TARGET_CACHE)/chaosblade-exec-os))
